@@ -17,12 +17,12 @@ use Vanda\Testing\ScreenTester;
 /**
  * Entry points for application code.
  */
-final class Vanda
+final class Panel
 {
     /**
      * Sidebar items, resolved on every request (so labels may use the current user):
      *
-     *     Vanda::menu(fn () => [MenuItem::make('Users')->icon('users')->to(UserListScreen::class)]);
+     *     Panel::menu(fn () => [MenuItem::make('Users')->icon('users')->to(UserListScreen::class)]);
      *
      * @param Closure(): iterable<MenuItem> $items
      */
@@ -34,7 +34,7 @@ final class Vanda
     /**
      * Permissions of the panel, shown in role and user forms and usable as Gate abilities:
      *
-     *     Vanda::permissions(fn () => [PermissionGroup::make('System')->add('platform.users', 'Users')]);
+     *     Panel::permissions(fn () => [PermissionGroup::make('System')->add('platform.users', 'Users')]);
      *
      * @param Closure(): iterable<PermissionGroup> $groups
      */
@@ -46,7 +46,7 @@ final class Vanda
     /**
      * Records the ⌘K palette can find. Called with what the user typed (2+ characters):
      *
-     *     Vanda::search(fn (string $query) => Page::where('title', 'like', "%{$query}%")->limit(5)->get()
+     *     Panel::search(fn (string $query) => Page::where('title', 'like', "%{$query}%")->limit(5)->get()
      *         ->map(fn (Page $page) => SearchResult::make($page->title)->icon('file')->to(PageEditScreen::class, ['page' => $page])));
      *
      * @param Closure(string $query): iterable<SearchResult> $provider
@@ -59,7 +59,7 @@ final class Vanda
     /**
      * Photo of the signed-in user in the sidebar; without it the initials are shown:
      *
-     *     Vanda::userAvatar(fn (User $user) => $user->attachments('avatar')->first()?->url());
+     *     Panel::userAvatar(fn (User $user) => $user->attachments('avatar')->first()?->url());
      *
      * @param Closure(mixed $user): ?string $resolver
      */
@@ -101,7 +101,7 @@ final class Vanda
     /**
      * Drive a screen in tests without a browser:
      *
-     *     Vanda::test(UserEditScreen::class, ['user' => $user])
+     *     Panel::test(UserEditScreen::class, ['user' => $user])
      *         ->set('form.email', 'not-an-email')
      *         ->call('save')
      *         ->assertHasErrors(['form.email']);
@@ -126,6 +126,16 @@ final class Vanda
     public static function registerPrefix(string $prefix): void
     {
         self::$prefixes[] = trim($prefix, '/');
+    }
+
+    /**
+     * URL prefixes of the panels registered with Route::vanda(), e.g. ['admin'].
+     *
+     * @return list<string>
+     */
+    public static function prefixes(): array
+    {
+        return array_values(array_unique(self::$prefixes));
     }
 
     /**
